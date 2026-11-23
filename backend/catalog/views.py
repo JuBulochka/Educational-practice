@@ -16,7 +16,7 @@ from rest_framework.response import Response
 from rest_framework.throttling import ScopedRateThrottle
 from rest_framework.views import APIView
 
-from .filters import ServiceFilter
+from .filters import ServiceFilter, ServiceSearchFilter
 from .models import Category, Service, ServiceRequest
 from .serializers import CategorySerializer, ServiceRequestSerializer, ServiceSerializer
 
@@ -61,8 +61,8 @@ class CategoryViewSet(PublicCatalogViewSet):
 class ServiceViewSet(PublicCatalogViewSet):
     serializer_class = ServiceSerializer
     filterset_class = ServiceFilter
-    filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
-    search_fields = ["name", "description"]
+    filter_backends = [DjangoFilterBackend, ServiceSearchFilter, filters.OrderingFilter]
+    search_fields = ["search_name", "search_description"]
     ordering_fields = ["price"]
     ordering = ["id"]
 

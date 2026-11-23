@@ -15,6 +15,6 @@ urlpatterns = [
     path("api/auth/session/", views.staff_session, name="staff-session"),
     path("api/auth/login/", views.StaffLoginView.as_view(), name="staff-login"),
     path("api/auth/logout/", views.staff_logout, name="staff-logout"),
-    path("api/statistics/", views.statistics),
+    path("api/statistics/", views.statistics, name="catalog-statistics"),
     path("api/", include(router.urls)),
 ]

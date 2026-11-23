@@ -14,15 +14,17 @@ export function CatalogFilters({ filters, categories, onChange, onReset }) {
         <button className="text-button" type="button" onClick={onReset}>Сбросить</button>
       </div>
       <label>
-        Категория
-        <select value={filters.category} onChange={(event) => onChange('category', event.target.value)}>
+        <span id="filter-category-label">Категория</span>
+        <select aria-labelledby="filter-category-label" value={filters.category}
+          onChange={(event) => onChange('category', event.target.value)}>
           <option value="">Все категории</option>
           {categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
         </select>
       </label>
       <label>
-        Доступность
-        <select value={filters.is_available} onChange={(event) => onChange('is_available', event.target.value)}>
+        <span id="filter-availability-label">Доступность</span>
+        <select aria-labelledby="filter-availability-label" value={filters.is_available}
+          onChange={(event) => onChange('is_available', event.target.value)}>
           <option value="">Любая</option>
           <option value="true">Можно записаться</option>
           <option value="false">Запись закрыта</option>

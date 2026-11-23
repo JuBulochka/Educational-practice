@@ -10,7 +10,7 @@ from rest_framework.test import APIClient, APITestCase
 from .models import Category, Service, ServiceRequest
 
 
-class CatalogAPItests(APITestCase):
+class CatalogAPITests(APITestCase):
     @classmethod
     def setUpTestData(cls):
         cls.languages = Category.objects.create(name="Языки", slug="languages")
@@ -77,7 +77,7 @@ class CatalogAPItests(APITestCase):
         self.assertEqual([row["name"] for row in response.data["results"]], ["Урок 4", "Урок 2"])
 
     def test_search_in_name_and_description(self):
-        for term in ["Excel", "Урок 1"]:
+        for term in ["Excel", "урок 1", "КОНСУЛЬТАЦИЯ по Excel"]:
             with self.subTest(term=term):
                 response = self.client.get(self.services_url, {"search": term})
                 self.assertEqual([row["name"] for row in response.data["results"]], ["Урок 1"])
@@ -129,6 +129,42 @@ class CatalogAPItests(APITestCase):
 
     def test_requests_are_private(self):
         self.assertEqual(self.client.get(self.requests_url).status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_category_management_requires_staff(self):
+        url = reverse("category-list")
+        data = {"name": "Новая категория", "slug": "new-category"}
+        self.assertEqual(self.client.post(url, data).status_code, status.HTTP_403_FORBIDDEN)
+        self.client.force_authenticate(self.staff)
+        created = self.client.post(url, data)
+        self.assertEqual(created.status_code, status.HTTP_201_CREATED)
+        detail_url = reverse("category-detail", args=[created.data["id"]])
+        self.assertEqual(self.client.patch(detail_url, {"name": "Обновлённая"}).data["name"], "Обновлённая")
+        self.assertEqual(self.client.delete(detail_url).status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_service_with_requests_cannot_be_deleted(self):
+        self.assertEqual(self.client.post(self.requests_url, self.payload).status_code, status.HTTP_201_CREATED)
+        self.client.force_authenticate(self.staff)
+        url = reverse("service-detail", args=[self.service.pk])
+        self.assertEqual(self.client.delete(url).status_code, status.HTTP_409_CONFLICT)
+        self.assertTrue(Service.objects.filter(pk=self.service.pk).exists())
+
+    def test_weekly_statistics_and_access(self):
+        url = reverse("catalog-statistics")
+        self.assertEqual(self.client.get(url).status_code, status.HTTP_403_FORBIDDEN)
+        self.client.post(self.requests_url, self.payload)
+        old = ServiceRequest.objects.create(
+            service=self.service, client_name="Старая заявка", phone="+70000000001",
+            desired_at=timezone.now() + timedelta(days=3),
+        )
+        ServiceRequest.objects.filter(pk=old.pk).update(created_at=timezone.now() - timedelta(days=8))
+        self.client.force_authenticate(self.staff)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["new_requests_this_week"], 1)
+        self.assertEqual(
+            {row["name"]: row["service_count"] for row in response.data["categories"]},
+            {"ИТ": 4, "Языки": 5},
+        )
 
     def test_invalid_query_parameters(self):
         for query, field in [
