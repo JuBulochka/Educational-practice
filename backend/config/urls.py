@@ -12,9 +12,9 @@ router.register("requests", views.ServiceRequestViewSet)
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("api/auth/session/", views.staff_session),
-    path("api/auth/login/", views.StaffLoginView.as_view()),
-    path("api/auth/logout/", views.staff_logout),
+    path("api/auth/session/", views.staff_session, name="staff-session"),
+    path("api/auth/login/", views.StaffLoginView.as_view(), name="staff-login"),
+    path("api/auth/logout/", views.staff_logout, name="staff-logout"),
     path("api/statistics/", views.statistics),
     path("api/", include(router.urls)),
 ]

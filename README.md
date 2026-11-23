@@ -20,3 +20,7 @@ $catalogKey = .\.venv\Scripts\python.exe -c "import secrets; print(secrets.token
 ```
 
 Модели и связи описаны в [ER.md](ER.md). Панель Django доступна по адресу http://127.0.0.1:8000/admin/.
+
+Маршруты и примеры запросов описаны в [API.md](API.md). Пример ответа со списком услуг виден на [скриншоте API](docs/screenshots/01-api-services.png).
+
+В каталоге `backend` команда `.\.venv\Scripts\python.exe manage.py test catalog` запускает API-тесты. Тестовая БД создаётся автоматически.
