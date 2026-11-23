@@ -1,6 +1,7 @@
 import { useCallback, useState } from 'react';
 import { getCategories, getServices } from '../api/catalog';
 import { CatalogFilters, defaultFilters } from '../components/CatalogFilters';
+import { FavoriteButton } from '../components/FavoriteButton';
 import { EmptyState, ErrorState, Loader } from '../components/Feedback';
 import { Pagination } from '../components/Pagination';
 import { ServiceCard } from '../components/ServiceCard';
@@ -66,7 +67,9 @@ export function CatalogPage() {
               <p className="result-count" role="status">{serviceCount(services.data.count)}</p>
               {services.data.results.length ? (
                 <div className="services-grid">
-                  {services.data.results.map((service) => <ServiceCard key={service.id} service={service} />)}
+                  {services.data.results.map((service) => (
+                    <ServiceCard key={service.id} service={service}><FavoriteButton service={service} /></ServiceCard>
+                  ))}
                 </div>
               ) : (
                 <EmptyState title="Услуги не найдены"

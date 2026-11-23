@@ -12,6 +12,8 @@ export function Layout() {
           </Link>
           <nav aria-label="Основное меню">
             <NavLink to="/" end>Каталог</NavLink>
+            <NavLink to="/favorites">Избранное</NavLink>
+            <NavLink to="/manage">Управление</NavLink>
           </nav>
         </div>
       </header>

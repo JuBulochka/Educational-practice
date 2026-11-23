@@ -1,6 +1,7 @@
 import { useCallback } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { getService } from '../api/catalog';
+import { FavoriteButton } from '../components/FavoriteButton';
 import { ErrorState, Loader } from '../components/Feedback';
 import { Availability } from '../components/ServiceCard';
 import { priceLabel } from '../format';
@@ -19,7 +20,10 @@ export function ServicePage() {
       {service.phase === 'ready' && (
         <div className="detail-layout">
           <article className="detail-main">
-            <span className="category-label">{service.data.category_name}</span>
+            <div className="service-top">
+              <span className="category-label">{service.data.category_name}</span>
+              <FavoriteButton service={service.data} />
+            </div>
             <h1>{service.data.name}</h1>
             <h2>О занятии</h2>
             <p>{service.data.description}</p>
@@ -30,6 +34,9 @@ export function ServicePage() {
               <div><dt>Стоимость</dt><dd>{priceLabel(service.data.price)}</dd></div>
               <div><dt>Длительность</dt><dd>{service.data.duration_minutes} мин</dd></div>
             </dl>
+            {service.data.is_available && (
+              <Link className="button detail-apply" to={`/services/${id}/request`}>Оставить заявку</Link>
+            )}
           </aside>
         </div>
       )}

@@ -10,6 +10,7 @@ export class ApiError extends Error {
 }
 
 export async function api(path, { method = 'GET', data, signal } = {}) {
+  if (method !== 'GET' && !csrfToken) await api('/auth/session/', { signal });
   const headers = { Accept: 'application/json' };
   if (data !== undefined) headers['Content-Type'] = 'application/json';
   if (method !== 'GET' && csrfToken) headers['X-CSRFToken'] = csrfToken;
